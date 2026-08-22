@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lunga Tshila</title>
+  <meta name="description" content="lungatshila.com — provisioning.">
+  <style>
+    @font-face {
+      font-family: 'Fraunces';
+      src: local('Fraunces');
+      font-display: swap;
+    }
+
+    :root {
+      --ink: #0F0E13;
+      --ink-raised: #17151D;
+      --paper: #F3EFE7;
+      --paper-dim: #C9C4B8;
+      --brass: #D4A657;
+      --brass-dim: #8A6F3F;
+      --line: rgba(243, 239, 231, 0.09);
+      --mono: 'IBM Plex Mono', 'SFMono-Regular', ui-monospace, Menlo, Consolas, monospace;
+      --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --serif: 'Fraunces', Georgia, 'Iowan Old Style', serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--sans);
+      overflow-x: hidden;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Ambient background: slow-drifting node graph, referencing infrastructure topology */
+    .field {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .field svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .field-line {
+      stroke: var(--brass);
+      stroke-width: 0.6;
+      opacity: 0.16;
+      fill: none;
+    }
+
+    .field-node {
+      fill: var(--brass);
+      opacity: 0.35;
+    }
+
+    .field-node.pulse {
+      animation: pulse 4.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.25; r: 1.6; }
+      50% { opacity: 0.75; r: 2.4; }
+    }
+
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background: radial-gradient(ellipse at 50% 40%, transparent 0%, transparent 35%, var(--ink) 88%);
+      pointer-events: none;
+    }
+
+    main {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8vh 6vw 6vh;
+      text-align: center;
+    }
+
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--brass);
+      margin: 0 0 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .eyebrow::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--brass);
+      box-shadow: 0 0 0 0 rgba(212, 166, 87, 0.6);
+      animation: ring 2.4s ease-out infinite;
+    }
+
+    @keyframes ring {
+      0%   { box-shadow: 0 0 0 0 rgba(212, 166, 87, 0.45); }
+      70%  { box-shadow: 0 0 0 9px rgba(212, 166, 87, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(212, 166, 87, 0); }
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-style: italic;
+      font-size: clamp(2.6rem, 7vw, 5.2rem);
+      line-height: 1.02;
+      margin: 0 0 1.1rem;
+      letter-spacing: -0.01em;
+      color: var(--paper);
+    }
+
+    .subhead {
+      font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+      color: var(--paper-dim);
+      max-width: 34ch;
+      margin: 0 0 3rem;
+      line-height: 1.55;
+      font-weight: 400;
+    }
+
+    .panel {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      text-align: left;
+      background: var(--ink-raised);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 1.4rem 1.6rem;
+      min-width: min(420px, 84vw);
+      box-shadow: 0 30px 60px -25px rgba(0,0,0,0.6);
+    }
+
+    .panel-row {
+      display: grid;
+      grid-template-columns: 6.5rem 1fr;
+      gap: 0.4rem;
+      padding: 0.42rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-row:last-child { border-bottom: none; }
+
+    .panel-key {
+      color: var(--paper-dim);
+      letter-spacing: 0.04em;
+    }
+
+    .panel-val {
+      color: var(--paper);
+      text-align: right;
+    }
+
+    .panel-val.accent { color: var(--brass); }
+
+    .cursor-line {
+      margin-top: 0.9rem;
+      padding-top: 0.9rem;
+      border-top: 1px solid var(--line);
+      color: var(--brass-dim);
+      text-align: left;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 7px;
+      height: 1em;
+      background: var(--brass);
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 1.1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    footer {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 2rem 6vw 2.4rem;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      color: var(--paper-dim);
+    }
+
+    footer a {
+      color: var(--paper-dim);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    footer a:hover,
+    footer a:focus-visible {
+      color: var(--brass);
+      border-color: var(--brass-dim);
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--brass);
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 480px) {
+      .panel-row { grid-template-columns: 5.5rem 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .eyebrow::before,
+      .cursor,
+      .field-node.pulse {
+        animation: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="field" aria-hidden="true">
+  <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+    <line class="field-line" x1="120" y1="140" x2="380" y2="260"/>
+    <line class="field-line" x1="380" y1="260" x2="640" y2="180"/>
+    <line class="field-line" x1="640" y1="180" x2="900" y2="300"/>
+    <line class="field-line" x1="380" y1="260" x2="420" y2="520"/>
+    <line class="field-line" x1="900" y1="300" x2="1080" y2="180"/>
+    <line class="field-line" x1="420" y1="520" x2="680" y2="620"/>
+    <line class="field-line" x1="680" y1="620" x2="960" y2="560"/>
+    <line class="field-line" x1="900" y1="300" x2="960" y2="560"/>
+    <line class="field-line" x1="120" y1="140" x2="180" y2="480"/>
+    <line class="field-line" x1="180" y1="480" x2="420" y2="520"/>
+    <line class="field-line" x1="960" y1="560" x2="1100" y2="700"/>
+
+    <circle class="field-node pulse" cx="120" cy="140" r="2"/>
+    <circle class="field-node" cx="380" cy="260" r="2"/>
+    <circle class="field-node pulse" cx="640" cy="180" r="2"/>
+    <circle class="field-node" cx="900" cy="300" r="2"/>
+    <circle class="field-node" cx="420" cy="520" r="2"/>
+    <circle class="field-node pulse" cx="1080" cy="180" r="2"/>
+    <circle class="field-node" cx="680" cy="620" r="2"/>
+    <circle class="field-node pulse" cx="960" cy="560" r="2"/>
+    <circle class="field-node" cx="180" cy="480" r="2"/>
+    <circle class="field-node" cx="1100" cy="700" r="2"/>
+  </svg>
+</div>
+<div class="vignette" aria-hidden="true"></div>
+
+<main>
+  <p class="eyebrow">System status</p>
+  <h1>Lunga Tshila</h1>
+  <p class="subhead">Email, Cloud, Apps &amp; Security Engineering. This site is being provisioned, full deploy incoming.</p>
+
+  <div class="panel" role="status" aria-label="Deployment status">
+    <div class="panel-row">
+      <span class="panel-key">status</span>
+      <span class="panel-val accent">provisioning</span>
+    </div>
+    <div class="panel-row">
+      <span class="panel-key">stack</span>
+      <span class="panel-val">HCL Terraform · S3 · CloudFront · ACM · Route 53</span>
+    </div>
+    <div class="panel-row">
+      <span class="panel-key">region</span>
+      <span class="panel-val">af-south-1</span>
+    </div>
+    <div class="panel-row">
+      <span class="panel-key">eta</span>
+      <span class="panel-val">soon</span>
+    </div>
+    <div class="cursor-line">deploy --target production<span class="cursor" aria-hidden="true"></span></div>
+  </div>
+</main>
+
+<footer>
+  <a href="mailto:hello@lungatshila.com">lungatshila10@gmail.com</a>
+</footer>
+
+</body>
+</html>
