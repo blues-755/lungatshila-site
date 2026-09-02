@@ -1,1 +1,1 @@
-Site-: https://lungatshila.com
+Static Page -: https://lungatshila.com
